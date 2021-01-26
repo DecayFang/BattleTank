@@ -31,16 +31,17 @@ private:
 	// if that location is on the landscape, then return true
 	bool GetSightRayHitLocation(FVector& OutHitLocation) const;
 
-	// get the direction implied by our aiming point
+	// get the direction implied by our aiming point, return true if the engine can get that direction
 	bool GetLookDirection(FVector2D ScreenLocation, FVector& OutLookDirection) const;
 
-	// trace a line from the %% along the LookDirection and return true if anything visable hitted
-	bool GetLookVectorHitLocation(FHitResult& OutHitResult, const FVector& LookPosition, const FVector& LookDirection, float TraceRange = 100000.f) const;
+	// trace a line from the camera along the LookDirection and return true if anything visable hitted
+	bool GetLookVectorHitLocation(FHitResult& OutHitResult, const FVector& LookPosition, const FVector& LookDirection) const;
 
 protected:
 	UPROPERTY(EditAnyWhere)
 	float CrossHairXLocation = 0.5f;
 	UPROPERTY(EditAnyWhere)
 	float CrossHairYLocation = 0.33333f;
-
+	UPROPERTY(EditAnywhere)
+	float TraceRange = 100000.f;
 };

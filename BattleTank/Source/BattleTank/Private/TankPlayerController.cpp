@@ -32,14 +32,15 @@ ATank* ATankPlayerController::GetControlledTank() const
 
 void ATankPlayerController::AimTowardsCrosshair()
 {
-	if (!GetControlledTank())
+	auto ControlledTank = GetControlledTank();
+	if (!ControlledTank)
 		return;
 
 	// trace a sight ray
 	FVector HitLocation;
 	if (GetSightRayHitLocation(HitLocation)) {
-		// if the ray hits sth on the landscape, then move the barrel towards it
-		UE_LOG(LogTemp, Warning, TEXT("Hit Location: %s"), *HitLocation.ToString());
+		// if the ray hits sth on the landscape, then tell the tank to aim at that thing
+		ControlledTank->AimAt(HitLocation);
 	}
 }
 
@@ -58,7 +59,7 @@ bool ATankPlayerController::GetSightRayHitLocation(FVector& OutHitLocation) cons
 		if (GetLookVectorHitLocation(HitResult, PlayerCameraManager->GetCameraLocation(), LookDirection)) {
 			OutHitLocation = HitResult.Location;
 			return true;
-		}
+		} 
 	}
 
 	return false;
@@ -75,7 +76,7 @@ bool ATankPlayerController::GetLookDirection(FVector2D ScreenLocation, FVector& 
 	);
 }
 
-bool ATankPlayerController::GetLookVectorHitLocation(FHitResult &OutHitResult, const FVector& LookPosition, const FVector& LookDirection, float TraceRange) const
+bool ATankPlayerController::GetLookVectorHitLocation(FHitResult &OutHitResult, const FVector& LookPosition, const FVector& LookDirection) const
 {
 	FCollisionQueryParams QueryParam(FName(""), false, GetControlledTank());
 	FCollisionResponseParams ResponseParam;
