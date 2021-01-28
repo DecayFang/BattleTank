@@ -2,6 +2,7 @@
 
 
 #include "Tank.h"
+#include "TankBarrel.h"
 
 // Sets default values
 ATank::ATank()
@@ -12,7 +13,7 @@ ATank::ATank()
 	TankAimingComponent = CreateDefaultSubobject<UTankAimingComponent>(FName("Aiming Component"));
 }
 
-void ATank::SetBarrelReference(UStaticMeshComponent* BarrelToSet)
+void ATank::SetBarrelReference(UTankBarrel* BarrelToSet)
 {
 	if(TankAimingComponent)
 		TankAimingComponent->SetBarrelReference(BarrelToSet);
@@ -22,7 +23,7 @@ void ATank::AimAt(FVector WorldSpaceAim)
 {
 	// delegate the action to the component
 	if(TankAimingComponent)
-		TankAimingComponent->AimAt(WorldSpaceAim);
+		TankAimingComponent->AimAt(WorldSpaceAim, LaunchSpeed);
 }
 
 // Called when the game starts or when spawned
