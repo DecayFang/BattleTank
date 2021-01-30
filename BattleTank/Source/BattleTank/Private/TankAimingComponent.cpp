@@ -4,13 +4,14 @@
 #include "TankAimingComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "TankBarrel.h"
+#include "TankTurret.h"
 
 // Sets default values for this component's properties
 UTankAimingComponent::UTankAimingComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;	// TODO: should this component ever tick?
 
 	// ...
 }
@@ -27,6 +28,12 @@ void UTankAimingComponent::AimAt(FVector WorldSpaceAim, float LaunchSpeed)
 	{
 		OutAimDirection = OutAimDirection.GetSafeNormal();
 		MoveBarrelTowards(OutAimDirection);
+		auto Time = GetWorld()->GetTimeSeconds();
+		UE_LOG(LogTemp, Warning, TEXT("%f: found solution"), Time);
+	}
+	else {
+		auto Time = GetWorld()->GetTimeSeconds();
+		UE_LOG(LogTemp, Warning, TEXT("%f: cannot found solution"), Time);
 	}
 }
 
@@ -41,13 +48,18 @@ void UTankAimingComponent::BeginPlay()
 
 void UTankAimingComponent::MoveBarrelTowards(FVector Direction)
 {
-	// calculate the difference between barrel's current rotation and Direction
+	// get the difference between the direction we want to aim the one that the barrel is actually aiming at
 	auto BarrelRotator = Barrel->GetForwardVector().Rotation();
 	auto DirectionRotator = Direction.Rotation();
 	auto DeltaRotator = DirectionRotator - BarrelRotator;
 
-	// move the barrel the right amount this frame, given a max elevation speed, and the frame time
-	Barrel->Elevate(5);	 // TODO: work out the magic number
+	// move the turret and the barrel the right amount this frame
+	if (Turret == nullptr || Barrel == nullptr) {
+		UE_LOG(LogTemp, Warning, TEXT("%s: can't find reference to Turret or Barrel"), GetOwner()->GetName());
+		return;
+	}
+	Turret->Rotate(DeltaRotator.Yaw);
+	Barrel->Elevate(DeltaRotator.Pitch);
 }
 
 
@@ -62,5 +74,10 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 void UTankAimingComponent::SetBarrelReference(UTankBarrel* BarrelToSet)
 {
 	Barrel = BarrelToSet;
+}
+
+void UTankAimingComponent::SetTurretReference(UTankTurret* TurretToSet)
+{
+	Turret = TurretToSet;
 }
 

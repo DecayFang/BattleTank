@@ -2,12 +2,14 @@
 
 #pragma once
 
-#include "TankAimingComponent.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "Tank.generated.h"
 
+// Forward declaration
 class UTankBarrel;
+class UTankTurret;
+class UTankAimingComponent;
 
 UCLASS()
 class BATTLETANK_API ATank : public APawn
@@ -28,10 +30,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Setup)
 	void SetBarrelReference(UTankBarrel* BarrelToSet);
 
+	UFUNCTION(BlueprintCallable, Category = Setup)
+	void SetTurretReference(UTankTurret* TurretToSetup);
+
 	// tank will make it's barrel to rotate towards the HitLocation
 	void AimAt(FVector WorldSpaceAim);
 	
-	// speed the projectile where leave from the barrel
+	// speed the projectile will leave from the barrel
 	UPROPERTY(EditAnywhere, Category = Firing)
 	float LaunchSpeed = 100000.f;	// TODO: find a more reasonable default LuanchSpeed
 

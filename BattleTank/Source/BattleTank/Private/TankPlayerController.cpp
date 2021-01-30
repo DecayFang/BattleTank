@@ -2,7 +2,6 @@
 
 #include "TankPlayerController.h"
 #include "Tank.h"
-#include "..\Public\TankPlayerController.h"
 
 void ATankPlayerController::BeginPlay()
 {

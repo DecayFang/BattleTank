@@ -15,8 +15,12 @@ class BATTLETANK_API UTankBarrel : public UStaticMeshComponent
 	GENERATED_BODY()
 
 public:
-
-	void Elevate(float DegreesPerSecond);
+	// max degree per sec * delta sec = max degree this frame can move
+	// max degree this frame can move * RelativeSpeed = degree this frame can move
+	// RelativeSpeed is a "ratio" for the max degree that the caller decides
+	// depending on how urgent it want the barrel to move
+	// -1 is max downward speed, and +1 is max up speed
+	void Elevate(float RelativeSpeed);
 
 private:
 
