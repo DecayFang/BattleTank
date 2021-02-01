@@ -5,6 +5,7 @@
 #include "TankAimingComponent.h"
 #include "TankBarrel.h"
 #include "TankTurret.h"
+#include "Projectile.h"
 
 // Sets default values
 ATank::ATank()
@@ -19,12 +20,23 @@ void ATank::SetBarrelReference(UTankBarrel* BarrelToSet)
 {
 	if(TankAimingComponent)
 		TankAimingComponent->SetBarrelReference(BarrelToSet);
+	Barrel = BarrelToSet;
 }
 
 void ATank::SetTurretReference(UTankTurret* TurretToSetup)
 {
 	if (TankAimingComponent)
 		TankAimingComponent->SetTurretReference(TurretToSetup);
+}
+
+void ATank::Fire()
+{
+	auto Projectile = GetWorld()->SpawnActor<AProjectile>(
+		ProjectileBlueprint,
+		Barrel->GetSocketLocation(FName("Projectile")),
+		Barrel->GetSocketRotation(FName("Projectile"))
+	);
+	Projectile->Launch(LaunchSpeed);
 }
 
 void ATank::AimAt(FVector WorldSpaceAim)

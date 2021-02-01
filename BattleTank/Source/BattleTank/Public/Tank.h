@@ -9,6 +9,7 @@
 // Forward declaration
 class UTankBarrel;
 class UTankTurret;
+class AProjectile;
 class UTankAimingComponent;
 
 UCLASS()
@@ -32,13 +33,16 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = Setup)
 	void SetTurretReference(UTankTurret* TurretToSetup);
+	
+	UFUNCTION(BlueprintCallable, Category = Behavior)
+	void Fire();
 
 	// tank will make it's barrel to rotate towards the HitLocation
 	void AimAt(FVector WorldSpaceAim);
 	
 	// speed the projectile will leave from the barrel
 	UPROPERTY(EditAnywhere, Category = Firing)
-	float LaunchSpeed = 100000.f;	// TODO: find a more reasonable default LuanchSpeed
+	float LaunchSpeed = 4000.f;
 
 protected:
 	// Called when the game starts or when spawned
@@ -47,7 +51,12 @@ protected:
 	// Aiming component member that will do the actual aiming behavior
 	UTankAimingComponent* TankAimingComponent = nullptr;
 
-private:
+	// reference to the projectile BP class in order to spawn the projectile
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AProjectile> ProjectileBlueprint;
 
+private:
+	// local reference to spawn the projectile
+	UTankBarrel* Barrel = nullptr;
 
 };

@@ -8,14 +8,7 @@ void ATankAIController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	auto PlayerTank = GetPlayerTank();
-	if (PlayerTank) {
-		UE_LOG(LogTemp, Warning, TEXT("%s have found %s"),
-				*GetName(), *PlayerTank->GetName());
-	}
-	else {
-		UE_LOG(LogTemp, Warning, TEXT("%s didn't find anything"), *GetName());
-	}
+	
 }
 
 void ATankAIController::Tick(float DeltaTime)
