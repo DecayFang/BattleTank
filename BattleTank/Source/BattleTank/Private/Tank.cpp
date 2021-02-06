@@ -3,6 +3,7 @@
 
 #include "Tank.h"
 #include "TankAimingComponent.h"
+#include "TankMovementComponent.h"
 #include "TankBarrel.h"
 #include "TankTurret.h"
 #include "Projectile.h"
@@ -31,12 +32,17 @@ void ATank::SetTurretReference(UTankTurret* TurretToSetup)
 
 void ATank::Fire()
 {
-	auto Projectile = GetWorld()->SpawnActor<AProjectile>(
-		ProjectileBlueprint,
-		Barrel->GetSocketLocation(FName("Projectile")),
-		Barrel->GetSocketRotation(FName("Projectile"))
-	);
-	Projectile->Launch(LaunchSpeed);
+	bool isReloaded = (FPlatformTime::Seconds() - LastReloadTime > ReloadTimeInSeconds);
+
+	if (isReloaded) {
+		auto Projectile = GetWorld()->SpawnActor<AProjectile>(
+			ProjectileBlueprint,
+			Barrel->GetSocketLocation(FName("Projectile")),
+			Barrel->GetSocketRotation(FName("Projectile"))
+			);
+		Projectile->Launch(LaunchSpeed);
+		LastReloadTime = FPlatformTime::Seconds();
+	}
 }
 
 void ATank::AimAt(FVector WorldSpaceAim)

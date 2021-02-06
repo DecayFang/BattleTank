@@ -24,7 +24,7 @@ private:
 
 	// maximum degrees the turret can ever rotate every second, 
 	// param RelativeSpeed in the Rotate() method is a weight of that maximum
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly)
 	float MaxDegreesPerSecond = 20.f;	
 	
 };

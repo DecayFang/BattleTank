@@ -11,6 +11,7 @@ class UTankBarrel;
 class UTankTurret;
 class AProjectile;
 class UTankAimingComponent;
+class UTankMovementComponent;
 
 UCLASS()
 class BATTLETANK_API ATank : public APawn
@@ -40,10 +41,6 @@ public:
 	// tank will make it's barrel to rotate towards the HitLocation
 	void AimAt(FVector WorldSpaceAim);
 	
-	// speed the projectile will leave from the barrel
-	UPROPERTY(EditAnywhere, Category = Firing)
-	float LaunchSpeed = 4000.f;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -52,11 +49,22 @@ protected:
 	UTankAimingComponent* TankAimingComponent = nullptr;
 
 	// reference to the projectile BP class in order to spawn the projectile
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = Firing)
 	TSubclassOf<AProjectile> ProjectileBlueprint;
+
+	// speed the projectile will leave from the barrel
+	UPROPERTY(EditDefaultsOnly, Category = Firing)
+	float LaunchSpeed = 4000.f;
+
+	// minimal interval between to tank firing
+	UPROPERTY(EditDefaultsOnly, Category = Firing)
+	float ReloadTimeInSeconds = 3.f;
 
 private:
 	// local reference to spawn the projectile
 	UTankBarrel* Barrel = nullptr;
+
+	// used to implement the interval of firing
+	double LastReloadTime = 0.0;
 
 };
