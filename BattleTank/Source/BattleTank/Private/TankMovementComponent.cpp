@@ -17,8 +17,6 @@ void UTankMovementComponent::IntendMoveForward(float Throw)
 	}
 	LeftTrack->SetThrottle(Throw);
 	RightTrack->SetThrottle(Throw);
-
-	// TODO: prevent accumulating thrusting forces due to multiple input methods
 }
 
 void UTankMovementComponent::IntendTurnClockwise(float Throw)
@@ -28,6 +26,24 @@ void UTankMovementComponent::IntendTurnClockwise(float Throw)
 	}
 	LeftTrack->SetThrottle(Throw);
 	RightTrack->SetThrottle(-Throw);
-
-	// TODO: prevent accumulating thrusting forces due to multiple input methods
 }
+
+// Flow:
+// AI controller calls MoveToActor, which in turn call this method
+// with MoveVelocity calculated by Path Finding Algorithm, 
+// so we override this method to provide our logic to get the AI tank
+// move to the player with given MoveVelocity in a physical way
+void UTankMovementComponent::RequestDirectMove(const FVector& MoveVelocity, bool bForceMaxSpeed)
+{
+	// No need to call Super as we're replacing the functionality
+	
+	auto AIForwardIntention = MoveVelocity.GetSafeNormal();	
+	auto TankForward = GetOwner()->GetActorForwardVector().GetSafeNormal();	// these two vectors are both in world space
+
+	float ForwardThrow = FVector::DotProduct(AIForwardIntention, TankForward);
+	IntendMoveForward(ForwardThrow);
+
+	float TurnThrow = FVector::CrossProduct(TankForward, AIForwardIntention).Z;
+	IntendTurnClockwise(TurnThrow); 
+}
+ 

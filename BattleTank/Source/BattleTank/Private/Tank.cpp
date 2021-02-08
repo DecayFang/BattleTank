@@ -39,7 +39,7 @@ void ATank::Fire()
 			ProjectileBlueprint,
 			Barrel->GetSocketLocation(FName("Projectile")),
 			Barrel->GetSocketRotation(FName("Projectile"))
-			);
+		);
 		Projectile->Launch(LaunchSpeed);
 		LastReloadTime = FPlatformTime::Seconds();
 	}

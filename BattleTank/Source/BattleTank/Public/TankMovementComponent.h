@@ -17,17 +17,19 @@ class BATTLETANK_API UTankMovementComponent : public UNavMovementComponent
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, Category = Setup)
+	UFUNCTION(BlueprintCallable, Category = "Setup")
 	void Initialize(UTankTrack* LeftTrackToSet, UTankTrack* RightTrackToSet);
 
-	UFUNCTION(BlueprintCallable, Category = Input)
+	UFUNCTION(BlueprintCallable, Category = "Input")
 	void IntendMoveForward(float Throw);
 
-	UFUNCTION(BlueprintCallable, Category = Input)
+	UFUNCTION(BlueprintCallable, Category = "Input")
 	void IntendTurnClockwise(float Throw);
 
 private:
 	UTankTrack* LeftTrack;
 	UTankTrack* RightTrack;
-	
+
+	// called by the engine's path find algos
+	virtual void RequestDirectMove(const FVector& MoveVelocity, bool bForceMaxSpeed) override;		// TODO: find appropriate access level
 };
