@@ -27,13 +27,6 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	// propagate the reference from the editor to the component
-	UFUNCTION(BlueprintCallable, Category = Setup)
-	void SetBarrelReference(UTankBarrel* BarrelToSet);
-
-	UFUNCTION(BlueprintCallable, Category = Setup)
-	void SetTurretReference(UTankTurret* TurretToSetup);
 	
 	UFUNCTION(BlueprintCallable, Category = Behavior)
 	void Fire();
@@ -44,9 +37,6 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	// Aiming component member that will do the actual aiming behavior
-	UTankAimingComponent* TankAimingComponent = nullptr;
 
 	// reference to the projectile BP class in order to spawn the projectile
 	UPROPERTY(EditAnywhere, Category = Firing)
@@ -61,6 +51,9 @@ protected:
 	float ReloadTimeInSeconds = 3.f;
 
 private:
+	// reference to the aiming component set in blueprint
+	UTankAimingComponent* TankAimingComponent = nullptr;
+
 	// local reference to spawn the projectile
 	UTankBarrel* Barrel = nullptr;
 

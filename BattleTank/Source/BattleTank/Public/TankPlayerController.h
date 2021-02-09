@@ -22,6 +22,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable, Category = "Setup")
 	ATank* GetControlledTank() const;
 
 	// tell the tank to try to move the barrel to somewhere that a firing will cause the 

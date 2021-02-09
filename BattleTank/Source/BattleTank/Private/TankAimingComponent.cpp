@@ -31,6 +31,13 @@ void UTankAimingComponent::AimAt(FVector WorldSpaceAim, float LaunchSpeed)
 	}
 }
 
+void UTankAimingComponent::Initialize(UTankBarrel* BarrelToSet, UTankTurret* TurretToSet)
+{
+	Barrel = BarrelToSet;
+	Turret = TurretToSet;
+}
+
+
 // Called when the game starts
 void UTankAimingComponent::BeginPlay()
 {
@@ -42,16 +49,17 @@ void UTankAimingComponent::BeginPlay()
 
 void UTankAimingComponent::MoveBarrelTowards(FVector Direction)
 {
+	if (Turret == nullptr || Barrel == nullptr) {
+		UE_LOG(LogTemp, Warning, TEXT("%s: can't find reference to Turret or Barrel"), *GetOwner()->GetName());
+		return;
+	}
+
 	// get the difference between the direction we want to aim the one that the barrel is actually aiming at
 	auto BarrelRotator = Barrel->GetForwardVector().Rotation();
 	auto DirectionRotator = Direction.Rotation();
 	auto DeltaRotator = DirectionRotator - BarrelRotator;
 
 	// move the turret and the barrel the right amount this frame
-	if (Turret == nullptr || Barrel == nullptr) {
-		UE_LOG(LogTemp, Warning, TEXT("%s: can't find reference to Turret or Barrel"), *GetOwner()->GetName());
-		return;
-	}
 	Turret->Rotate(DeltaRotator.Yaw);
 	Barrel->Elevate(DeltaRotator.Pitch);
 }
@@ -63,15 +71,5 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
-}
-
-void UTankAimingComponent::SetBarrelReference(UTankBarrel* BarrelToSet)
-{
-	Barrel = BarrelToSet;
-}
-
-void UTankAimingComponent::SetTurretReference(UTankTurret* TurretToSet)
-{
-	Turret = TurretToSet;
 }
 
