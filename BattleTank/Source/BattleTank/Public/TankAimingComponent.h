@@ -37,13 +37,15 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	const UTankBarrel* GetBarrelReference() const;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 	// represent the tank's current firing status
 	UPROPERTY(BlueprintReadOnly, category = "State")
-	EFiringState FiringStatus = EFiringState::Aiming;
+	EFiringState FiringStatus = EFiringState::Reloading;
 
 private:	
 	// helper function that move the barrel towards the given direction

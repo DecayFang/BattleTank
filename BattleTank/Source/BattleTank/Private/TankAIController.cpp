@@ -18,7 +18,7 @@ void ATankAIController::Tick(float DeltaTime)
 	// AI Tank behaviors
 	auto ControlledTank = Cast<ATank>(GetPawn());
 	auto PlayerTank = Cast<ATank>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	if (PlayerTank && ControlledTank) {
+	if (ensure(PlayerTank && ControlledTank)) {
 		MoveToActor(PlayerTank, AcceptanceRadius);		// TODO: check if radius is in cm
 
 		ControlledTank->AimAt(PlayerTank->GetActorLocation());

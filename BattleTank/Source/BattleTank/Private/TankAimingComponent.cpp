@@ -19,7 +19,7 @@ UTankAimingComponent::UTankAimingComponent()
 
 void UTankAimingComponent::AimAt(FVector WorldSpaceAim, float LaunchSpeed)
 {
-	if (!Barrel)
+	if (!ensure(Barrel))
 		return;
 
 	// calculate the aiming vector by the given aiming point and firing speed
@@ -37,6 +37,11 @@ void UTankAimingComponent::Initialize(UTankBarrel* BarrelToSet, UTankTurret* Tur
 	Turret = TurretToSet;
 }
 
+const UTankBarrel* UTankAimingComponent::GetBarrelReference() const
+{
+	return Barrel;
+}
+
 
 // Called when the game starts
 void UTankAimingComponent::BeginPlay()
@@ -49,8 +54,7 @@ void UTankAimingComponent::BeginPlay()
 
 void UTankAimingComponent::MoveBarrelTowards(FVector Direction)
 {
-	if (Turret == nullptr || Barrel == nullptr) {
-		UE_LOG(LogTemp, Warning, TEXT("%s: can't find reference to Turret or Barrel"), *GetOwner()->GetName());
+	if (!ensure(Turret != nullptr && Barrel != nullptr)) {
 		return;
 	}
 

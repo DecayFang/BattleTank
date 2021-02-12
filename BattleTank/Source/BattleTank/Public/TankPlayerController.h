@@ -8,6 +8,7 @@
 
 // Forward declaration
 class ATank;
+class UTankAimingComponent;
 
 /**
  * 
@@ -24,6 +25,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Setup")
 	ATank* GetControlledTank() const;
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Setup")
+	void AimingComponentFound(UTankAimingComponent* AimingComponentRef);
 
 	// tell the tank to try to move the barrel to somewhere that a firing will cause the 
 	// place covered by the CrossHair be fired

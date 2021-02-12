@@ -3,7 +3,6 @@
 
 #include "Tank.h"
 #include "TankAimingComponent.h"
-#include "TankMovementComponent.h"
 #include "TankBarrel.h"
 #include "TankTurret.h"
 #include "Projectile.h"
@@ -18,8 +17,12 @@ ATank::ATank()
 
 void ATank::Fire()
 {
-	bool isReloaded = (FPlatformTime::Seconds() - LastReloadTime > ReloadTimeInSeconds);
+	const UTankBarrel* Barrel = TankAimingComponent->GetBarrelReference();
+	if (!ensure(Barrel)) {
+		return;
+	}
 
+	bool isReloaded = (FPlatformTime::Seconds() - LastReloadTime > ReloadTimeInSeconds);
 	if (isReloaded) {
 		auto Projectile = GetWorld()->SpawnActor<AProjectile>(
 			ProjectileBlueprint,
@@ -34,7 +37,7 @@ void ATank::Fire()
 void ATank::AimAt(FVector WorldSpaceAim)
 {
 	// delegate the action to the component
-	if(TankAimingComponent)
+	if(ensure(TankAimingComponent))
 		TankAimingComponent->AimAt(WorldSpaceAim, LaunchSpeed);
 }
 

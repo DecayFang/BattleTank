@@ -11,10 +11,9 @@ class UTankBarrel;
 class UTankTurret;
 class AProjectile;
 class UTankAimingComponent;
-class UTankMovementComponent;
 
 UCLASS()
-class BATTLETANK_API ATank : public APawn
+class BATTLETANK_API ATank : public APawn 
 {
 	GENERATED_BODY()
 
@@ -53,9 +52,6 @@ protected:
 private:
 	// reference to the aiming component set in blueprint
 	UTankAimingComponent* TankAimingComponent = nullptr;
-
-	// local reference to spawn the projectile
-	UTankBarrel* Barrel = nullptr;
 
 	// used to implement the interval of firing
 	double LastReloadTime = 0.0;

@@ -1,12 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "TankPlayerController.h"
+#include "TankAimingComponent.h"
 #include "Tank.h"
 
 void ATankPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// find the component, and fire the event to tell others the component has been found
+	auto AimingComp = GetControlledTank()->FindComponentByClass<UTankAimingComponent>();
+	if (ensure(AimingComp)) {
+		AimingComponentFound(AimingComp);
+	}
 }
 
 void ATankPlayerController::Tick(float DeltaTime)
@@ -24,7 +30,7 @@ ATank* ATankPlayerController::GetControlledTank() const
 void ATankPlayerController::AimTowardsCrosshair()
 {
 	auto ControlledTank = GetControlledTank();
-	if (!ControlledTank)
+	if (!ensure(ControlledTank))
 		return;
 
 	// trace a sight ray
