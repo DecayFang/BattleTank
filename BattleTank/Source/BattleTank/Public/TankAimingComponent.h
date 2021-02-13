@@ -18,6 +18,7 @@ enum class EFiringState : uint8
 // Forward declarations
 class UTankBarrel;
 class UTankTurret;
+class AProjectile;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BATTLETANK_API UTankAimingComponent : public UActorComponent
@@ -29,7 +30,10 @@ public:
 	UTankAimingComponent();
 
 	// do the actual aiming behavior: move the barrel of the owner tank towards the HitLocation
-	void AimAt(FVector WorldSpaceAim, float LaunchSpeed);
+	void AimAt(FVector WorldSpaceAim);
+
+	UFUNCTION(BlueprintCallable, Category = Behavior)
+	void Fire();
 
 	UFUNCTION(BlueprintCallable, Category = "Setup")
 	void Initialize(UTankBarrel* BarrelToSet, UTankTurret* TurretToSet);
@@ -43,9 +47,21 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	// reference to the projectile BP class in order to spawn the projectile
+	UPROPERTY(EditAnywhere, Category = "Firing")
+	TSubclassOf<AProjectile> ProjectileBlueprint;
+
 	// represent the tank's current firing status
 	UPROPERTY(BlueprintReadOnly, category = "State")
-	EFiringState FiringStatus = EFiringState::Reloading;
+	EFiringState FiringStatus = EFiringState::Locked;
+
+	// speed the projectile will leave from the barrel
+	UPROPERTY(EditDefaultsOnly, Category = "Firing")
+	float LaunchSpeed = 4000.f;
+
+	// minimal interval between to tank firing
+	UPROPERTY(EditDefaultsOnly, Category = "Firing")
+	float ReloadTimeInSeconds = 3.f;
 
 private:	
 	// helper function that move the barrel towards the given direction
@@ -56,5 +72,8 @@ private:
 
 	// reference to the turret mesh
 	UTankTurret* Turret = nullptr;
+
+	// used to implement the interval of firing
+	double LastReloadTime = 0.0;
 		
 };

@@ -7,7 +7,7 @@
 #include "TankAIController.generated.h"
 
 // Forward declaration
-class ATank;
+class UTankAimingComponent;
 
 /**
  * 
@@ -27,5 +27,10 @@ protected:
 
 	// how close can the AI tank get
 	float AcceptanceRadius = 3000.f;
+
+private:
+	
+	// reference to the aiming component set in blueprint
+	UTankAimingComponent* TankAimingComponent = nullptr;
 	
 };

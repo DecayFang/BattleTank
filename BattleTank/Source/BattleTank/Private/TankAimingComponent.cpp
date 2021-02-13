@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "TankBarrel.h"
 #include "TankTurret.h"
+#include "Projectile.h"
 
 // Sets default values for this component's properties
 UTankAimingComponent::UTankAimingComponent()
@@ -16,11 +17,11 @@ UTankAimingComponent::UTankAimingComponent()
 	// ...
 }
 
-
-void UTankAimingComponent::AimAt(FVector WorldSpaceAim, float LaunchSpeed)
+void UTankAimingComponent::AimAt(FVector WorldSpaceAim)
 {
-	if (!ensure(Barrel))
+	if (!ensure(Barrel)) {
 		return;
+	}
 
 	// calculate the aiming vector by the given aiming point and firing speed
 	FVector OutAimDirection, StartLocation = Barrel->GetSocketLocation(FName("Projectile"));
@@ -28,6 +29,24 @@ void UTankAimingComponent::AimAt(FVector WorldSpaceAim, float LaunchSpeed)
 	{
 		OutAimDirection = OutAimDirection.GetSafeNormal();
 		MoveBarrelTowards(OutAimDirection);
+	}
+}
+
+void UTankAimingComponent::Fire()
+{
+	if (!ensure(Barrel && ProjectileBlueprint)) {
+		return;
+	}
+
+	bool isReloaded = (FPlatformTime::Seconds() - LastReloadTime > ReloadTimeInSeconds);
+	if (isReloaded) {
+		auto Projectile = GetWorld()->SpawnActor<AProjectile>(
+			ProjectileBlueprint,
+			Barrel->GetSocketLocation(FName("Projectile")),
+			Barrel->GetSocketRotation(FName("Projectile"))
+		);
+		Projectile->Launch(LaunchSpeed);
+		LastReloadTime = FPlatformTime::Seconds();
 	}
 }
 

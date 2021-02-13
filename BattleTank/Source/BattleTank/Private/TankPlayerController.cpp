@@ -2,16 +2,16 @@
 
 #include "TankPlayerController.h"
 #include "TankAimingComponent.h"
-#include "Tank.h"
 
 void ATankPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
 	// find the component, and fire the event to tell others the component has been found
-	auto AimingComp = GetControlledTank()->FindComponentByClass<UTankAimingComponent>();
+	auto AimingComp = GetPawn()->FindComponentByClass<UTankAimingComponent>();
 	if (ensure(AimingComp)) {
 		AimingComponentFound(AimingComp);
+		TankAimingComponent = AimingComp;
 	}
 }
 
@@ -22,22 +22,13 @@ void ATankPlayerController::Tick(float DeltaTime)
 	AimTowardsCrosshair();
 }
 
-ATank* ATankPlayerController::GetControlledTank() const
-{
-	return Cast<ATank>(GetPawn());
-}
-
 void ATankPlayerController::AimTowardsCrosshair()
 {
-	auto ControlledTank = GetControlledTank();
-	if (!ensure(ControlledTank))
-		return;
-
 	// trace a sight ray
 	FVector HitLocation;
 	if (GetSightRayHitLocation(HitLocation)) {
 		// if the ray hits sth on the landscape, then tell the tank to aim at that thing
-		ControlledTank->AimAt(HitLocation);
+		TankAimingComponent->AimAt(HitLocation);
 	}
 }
 
@@ -75,7 +66,7 @@ bool ATankPlayerController::GetLookDirection(FVector2D ScreenLocation, FVector& 
 
 bool ATankPlayerController::GetLookVectorHitLocation(FHitResult &OutHitResult, const FVector& LookPosition, const FVector& LookDirection) const
 {
-	FCollisionQueryParams QueryParam(FName(""), false, GetControlledTank());
+	FCollisionQueryParams QueryParam(FName(""), false, GetPawn());
 	FCollisionResponseParams ResponseParam;
 	return GetWorld()->LineTraceSingleByChannel(
 		OutHitResult,

@@ -7,7 +7,6 @@
 #include "TankPlayerController.generated.h"
 
 // Forward declaration
-class ATank;
 class UTankAimingComponent;
 
 /**
@@ -23,15 +22,25 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(BlueprintCallable, Category = "Setup")
-	ATank* GetControlledTank() const;
-
 	UFUNCTION(BlueprintImplementableEvent, Category = "Setup")
 	void AimingComponentFound(UTankAimingComponent* AimingComponentRef);
 
 	// tell the tank to try to move the barrel to somewhere that a firing will cause the 
 	// place covered by the CrossHair be fired
 	void AimTowardsCrosshair();
+
+protected:
+	// CrossHair's x axis location in percentage
+	UPROPERTY(EditDefaultsOnly, Category = "Setup")
+	float CrossHairXLocation = 0.5f;
+	
+	// CrossHair's y axis location in percentage
+	UPROPERTY(EditDefaultsOnly, Category = "Setup")
+	float CrossHairYLocation = 0.33333f;
+
+	// how far the line trace will try to go
+	UPROPERTY(EditDefaultsOnly, Category = "Setup")
+	float TraceRange = 100000.f;
 
 private:
 	// helper function: get the 3D world location covered by our 2D crosshair,
@@ -45,11 +54,7 @@ private:
 	// trace a line from the camera along the LookDirection and return true if anything visable hitted
 	bool GetLookVectorHitLocation(FHitResult& OutHitResult, const FVector& LookPosition, const FVector& LookDirection) const;
 
-protected:
-	UPROPERTY(EditDefaultsOnly)
-	float CrossHairXLocation = 0.5f;
-	UPROPERTY(EditDefaultsOnly)
-	float CrossHairYLocation = 0.33333f;
-	UPROPERTY(EditDefaultsOnly)
-	float TraceRange = 100000.f;
+	// reference to the aiming component set in blueprint
+	UTankAimingComponent* TankAimingComponent = nullptr;
+
 };
