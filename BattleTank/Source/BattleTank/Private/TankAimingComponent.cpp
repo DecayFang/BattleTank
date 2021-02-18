@@ -12,9 +12,8 @@ UTankAimingComponent::UTankAimingComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
 }
 
 void UTankAimingComponent::AimAt(FVector WorldSpaceAim)
@@ -24,22 +23,22 @@ void UTankAimingComponent::AimAt(FVector WorldSpaceAim)
 	}
 
 	// calculate the aiming vector by the given aiming point and firing speed
-	FVector OutAimDirection, StartLocation = Barrel->GetSocketLocation(FName("Projectile"));
-	if (UGameplayStatics::SuggestProjectileVelocity(this, OutAimDirection, StartLocation, WorldSpaceAim, LaunchSpeed, false, 0.f, 0.f, ESuggestProjVelocityTraceOption::DoNotTrace))
+	FVector StartLocation = Barrel->GetSocketLocation(FName("Projectile"));
+	if (UGameplayStatics::SuggestProjectileVelocity(this, DirectionToAim, StartLocation, WorldSpaceAim, LaunchSpeed, false, 0.f, 0.f, ESuggestProjVelocityTraceOption::DoNotTrace))
 	{
-		OutAimDirection = OutAimDirection.GetSafeNormal();
-		MoveBarrelTowards(OutAimDirection);
+		DirectionToAim = DirectionToAim.GetSafeNormal();
+		MoveBarrelTowards(DirectionToAim);
 	}
 }
 
 void UTankAimingComponent::Fire()
 {
-	if (!ensure(Barrel && ProjectileBlueprint)) {
+	if (!ensure(Barrel && ProjectileBlueprint) || RemainAmmo <= 0) {
 		return;
 	}
-
-	bool isReloaded = (FPlatformTime::Seconds() - LastReloadTime > ReloadTimeInSeconds);
-	if (isReloaded) {
+	
+	if (FiringState != EFiringState::Reloading) {
+		--RemainAmmo;
 		auto Projectile = GetWorld()->SpawnActor<AProjectile>(
 			ProjectileBlueprint,
 			Barrel->GetSocketLocation(FName("Projectile")),
@@ -47,6 +46,7 @@ void UTankAimingComponent::Fire()
 		);
 		Projectile->Launch(LaunchSpeed);
 		LastReloadTime = FPlatformTime::Seconds();
+		FiringState = EFiringState::Reloading;
 	}
 }
 
@@ -56,19 +56,14 @@ void UTankAimingComponent::Initialize(UTankBarrel* BarrelToSet, UTankTurret* Tur
 	Turret = TurretToSet;
 }
 
-const UTankBarrel* UTankAimingComponent::GetBarrelReference() const
-{
-	return Barrel;
-}
-
-
 // Called when the game starts
 void UTankAimingComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
+	// TODO: if put this initialization into BeginPlay, then AI tank will shoot unconditionally at the begin play
+	// sort out the reason of this issue
+	LastReloadTime = FPlatformTime::Seconds();	// we cannot fire at the begining
 }
 
 void UTankAimingComponent::MoveBarrelTowards(FVector Direction)
@@ -81,10 +76,23 @@ void UTankAimingComponent::MoveBarrelTowards(FVector Direction)
 	auto BarrelRotator = Barrel->GetForwardVector().Rotation();
 	auto DirectionRotator = Direction.Rotation();
 	auto DeltaRotator = DirectionRotator - BarrelRotator;
+	if (DeltaRotator.Yaw > 180.f)	// force the turret to find the closest path
+		DeltaRotator.Yaw -= 360.f;
+	else if (DeltaRotator.Yaw < -180.f)
+		DeltaRotator.Yaw += 360.f;
 
 	// move the turret and the barrel the right amount this frame
 	Turret->Rotate(DeltaRotator.Yaw);
 	Barrel->Elevate(DeltaRotator.Pitch);
+}
+
+// TODO: if SuggestProjectileVelocity() cannot suggest a valid direction
+// then DirectionToAim might be in invalid state. Handle that situation in
+// AimAt(), and find (or create) a reasonable EFiringState for this case
+bool UTankAimingComponent::IsBarrelMoving() const
+{
+	check(Barrel);
+	return !DirectionToAim.Equals(Barrel->GetForwardVector(), 0.02f);
 }
  
 
@@ -93,6 +101,28 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	// switch the firing state
+	if (RemainAmmo <= 0) {
+		FiringState = EFiringState::Exhausted;
+	}
+	else if (FPlatformTime::Seconds() - LastReloadTime < ReloadTimeInSeconds) {
+		FiringState = EFiringState::Reloading;
+	}
+	else if (IsBarrelMoving()) {
+		FiringState = EFiringState::Aiming;
+	}
+	else {
+		FiringState = EFiringState::Locked;
+	}
+}
+
+EFiringState UTankAimingComponent::GetFiringState() const
+{
+	return FiringState;
+}
+
+int32 UTankAimingComponent::GetRemainAmmo() const
+{
+	return RemainAmmo;
 }
 

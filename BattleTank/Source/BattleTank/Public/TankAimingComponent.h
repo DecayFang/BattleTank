@@ -11,8 +11,9 @@ UENUM()
 enum class EFiringState : uint8
 {
 	Reloading,		// tank is preparing for new projectiles
-	Aiming,			// tank's turret and barrel is moving, and the projectile is ready
-	Locked			// tank is aiming towards the crosshair, and the projectile is ready
+	Aiming,			// tank's turret and/or barrel is moving, and the projectile is ready
+	Locked,			// tank is aiming towards the crosshair, and the projectile is ready
+	Exhausted		// tank has ran out of ammo
 };
 
 // Forward declarations
@@ -41,19 +42,22 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	const UTankBarrel* GetBarrelReference() const;
+	UFUNCTION(BlueprintCallable, Category = "Firing State")
+	EFiringState GetFiringState() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Firing State")
+	int32 GetRemainAmmo() const;
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 	// reference to the projectile BP class in order to spawn the projectile
-	UPROPERTY(EditAnywhere, Category = "Firing")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Firing")
 	TSubclassOf<AProjectile> ProjectileBlueprint;
 
 	// represent the tank's current firing status
-	UPROPERTY(BlueprintReadOnly, category = "State")
-	EFiringState FiringStatus = EFiringState::Locked;
+	EFiringState FiringState = EFiringState::Reloading;
 
 	// speed the projectile will leave from the barrel
 	UPROPERTY(EditDefaultsOnly, Category = "Firing")
@@ -64,16 +68,24 @@ protected:
 	float ReloadTimeInSeconds = 3.f;
 
 private:	
-	// helper function that move the barrel towards the given direction
-	void MoveBarrelTowards(FVector Direction);
 
-	// reference to the barrel mesh
+	void MoveBarrelTowards(FVector Direction);		// helper function
+
 	UTankBarrel* Barrel = nullptr;
 
-	// reference to the turret mesh
 	UTankTurret* Turret = nullptr;
 
 	// used to implement the interval of firing
 	double LastReloadTime = 0.0;
+
+	bool IsBarrelMoving() const;
+
+	// direction the tank want to aim to, this member is used to implement the crosshair state switching logic
+	// TODO: there is a race condition between the Tick function of this class and the Tank AI controller class
+	// if this class's firstly get called, since FVector is default in (0,0,0), the AI tank will shoot unconditionally
+	// if the LastReloadTime messed up and AI tank initally aim towards (0,0,0)
+	FVector DirectionToAim;
+
+	int32 RemainAmmo = 3;
 		
 };

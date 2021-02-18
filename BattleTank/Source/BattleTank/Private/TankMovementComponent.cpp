@@ -15,8 +15,8 @@ void UTankMovementComponent::IntendMoveForward(float Throw)
 	if (!ensure(LeftTrack && RightTrack)) {
 		return;
 	}
-	LeftTrack->SetThrottle(Throw);
-	RightTrack->SetThrottle(Throw);
+	LeftTrack->SetThrottle(0.5 * Throw);
+	RightTrack->SetThrottle(0.5 * Throw);
 }
 
 void UTankMovementComponent::IntendTurnClockwise(float Throw)
@@ -24,8 +24,8 @@ void UTankMovementComponent::IntendTurnClockwise(float Throw)
 	if (!ensure(LeftTrack && RightTrack)) {
 		return;
 	}
-	LeftTrack->SetThrottle(Throw);
-	RightTrack->SetThrottle(-Throw);
+	LeftTrack->SetThrottle(0.5 * Throw);
+	RightTrack->SetThrottle(-0.5 * Throw);
 }
 
 // Flow:

@@ -21,10 +21,11 @@ void ATankAIController::Tick(float DeltaTime)
 	// AI Tank behaviors
 	auto PlayerTank = GetWorld()->GetFirstPlayerController()->GetPawn();
 	if (ensure(PlayerTank)) {
-		MoveToActor(PlayerTank, AcceptanceRadius);		// TODO: check if radius is in cm
+		MoveToActor(PlayerTank, AcceptanceRadius);
 
 		TankAimingComponent->AimAt(PlayerTank->GetActorLocation());
 
-		TankAimingComponent->Fire();
+		if (TankAimingComponent->GetFiringState() == EFiringState::Locked)
+			TankAimingComponent->Fire();
 	}
 }

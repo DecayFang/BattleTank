@@ -73,9 +73,5 @@ Plugins/*/Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 
-# Starter Contents
-Content/StarterContent/Textures/*
-Content/StarterContent/HDRI/*
-
 # game menu image
 Content/UI/MainMenuImg.uasset
