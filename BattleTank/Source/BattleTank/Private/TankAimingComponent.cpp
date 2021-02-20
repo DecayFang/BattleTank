@@ -61,8 +61,6 @@ void UTankAimingComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// TODO: if put this initialization into BeginPlay, then AI tank will shoot unconditionally at the begin play
-	// sort out the reason of this issue
 	LastReloadTime = FPlatformTime::Seconds();	// we cannot fire at the begining
 }
 

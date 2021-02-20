@@ -67,6 +67,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Firing")
 	float ReloadTimeInSeconds = 3.f;
 
+	// the default value of this data indicating the initial ammo
+	UPROPERTY(EditDefaultsOnly, Category = "Firing")
+	int32 RemainAmmo = 3;
+
 private:	
 
 	void MoveBarrelTowards(FVector Direction);		// helper function
@@ -78,14 +82,12 @@ private:
 	// used to implement the interval of firing
 	double LastReloadTime = 0.0;
 
-	bool IsBarrelMoving() const;
-
 	// direction the tank want to aim to, this member is used to implement the crosshair state switching logic
-	// TODO: there is a race condition between the Tick function of this class and the Tank AI controller class
+	// TODO: there is a race condition between the Tick function of this class and the Tank AI controller class's
 	// if this class's firstly get called, since FVector is default in (0,0,0), the AI tank will shoot unconditionally
 	// if the LastReloadTime messed up and AI tank initally aim towards (0,0,0)
 	FVector DirectionToAim;
 
-	int32 RemainAmmo = 3;
+	bool IsBarrelMoving() const;
 		
 };
