@@ -8,6 +8,7 @@
 #include "Projectile.generated.h"
 
 class UProjectileMovementComponent;
+class URadialForceComponent;
 
 UCLASS()
 class BATTLETANK_API AProjectile : public AActor
@@ -18,22 +19,38 @@ public:
 	// Sets default values for this actor's properties
 	AProjectile();
 
-	void Launch(float Speed);
-
-protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	void Launch(float Speed);
+
+protected:
 	UProjectileMovementComponent* ProjectileMovementComponent = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = "Collision")
 	UStaticMeshComponent* CollisionMesh = nullptr;
 
+	// handles the particle effects when a projectile leaves the barrel
 	UPROPERTY(VisibleAnywhere, Category = "Particle")
 	UParticleSystemComponent* LaunchBlast = nullptr;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	// handles the particle effects when a projectile hits something
+	UPROPERTY(VisibleAnywhere, Category = "Particle")
+	UParticleSystemComponent* ImpactBlast = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = "Particle")
+	URadialForceComponent* ExplosionForce = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Destroy")
+	float DestroyDelay = 1.f;
+	 
+private:
+
+	FTimerDynamicDelegate TimerDelegate;
+
+	void OnTimerExpire(void);
+
+	UFUNCTION()
+	void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
 
 };
