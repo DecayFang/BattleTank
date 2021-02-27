@@ -2,17 +2,12 @@
 
 #include "TankPlayerController.h"
 #include "TankAimingComponent.h"
+#include "Tank.h"
 
 void ATankPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// find the component, and fire the event to tell others the component has been found
-	auto AimingComp = GetPawn()->FindComponentByClass<UTankAimingComponent>();
-	if (ensure(AimingComp)) {
-		AimingComponentFound(AimingComp);
-		TankAimingComponent = AimingComp;
-	}
 }
 
 void ATankPlayerController::Tick(float DeltaTime)
@@ -20,6 +15,31 @@ void ATankPlayerController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	AimTowardsCrosshair();
+}
+
+void ATankPlayerController::SetPawn(APawn* InPawn)
+{
+	Super::SetPawn(InPawn);
+	if (InPawn) {
+		// find the component, and fire the event to tell others the component has been found
+		auto AimingComp = InPawn->FindComponentByClass<UTankAimingComponent>();
+		if (ensure(AimingComp)) {
+			AimingComponentFound(AimingComp);
+			TankAimingComponent = AimingComp;
+		}
+
+		// register the On Tank Death method to tank's event
+		ATank* PossessedTank = Cast<ATank>(InPawn);
+		if (!ensure(PossessedTank)) {
+			return;
+		}
+		PossessedTank->OnTankDeathDelegate.AddUniqueDynamic(this, &ATankPlayerController::OnPossessedTankDeath);
+	}
+}
+
+void ATankPlayerController::OnPossessedTankDeath()
+{
+	StartSpectatingOnly();
 }
 
 void ATankPlayerController::AimTowardsCrosshair()
@@ -72,7 +92,7 @@ bool ATankPlayerController::GetLookVectorHitLocation(FHitResult &OutHitResult, c
 		OutHitResult,
 		LookPosition,
 		LookPosition + LookDirection * TraceRange,
-		ECollisionChannel::ECC_Visibility,
+		ECollisionChannel::ECC_Camera,
 		QueryParam,
 		ResponseParam
 	);

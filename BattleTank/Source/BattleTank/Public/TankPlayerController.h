@@ -25,6 +25,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Setup")
 	void AimingComponentFound(UTankAimingComponent* AimingComponentRef);
 
+	UFUNCTION()
+	void OnPossessedTankDeath();
+
 	// tell the tank to try to move the barrel to somewhere that a firing will cause the 
 	// place covered by the CrossHair be fired
 	void AimTowardsCrosshair();
@@ -41,6 +44,8 @@ protected:
 	// how far the line trace will try to go
 	UPROPERTY(EditDefaultsOnly, Category = "Setup")
 	float TraceRange = 100000.f;
+
+	virtual void SetPawn(APawn* InPawn) override;
 
 private:
 	// helper function: get the 3D world location covered by our 2D crosshair,

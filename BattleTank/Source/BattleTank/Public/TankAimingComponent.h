@@ -69,7 +69,7 @@ protected:
 
 	// the default value of this data indicating the initial ammo
 	UPROPERTY(EditDefaultsOnly, Category = "Firing")
-	int32 RemainAmmo = 3;
+	int32 RemainAmmo = 50;
 
 private:	
 

@@ -43,6 +43,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Destroy")
 	float DestroyDelay = 1.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	float ProjectileDamage= 20.f;
 	 
 private:
 

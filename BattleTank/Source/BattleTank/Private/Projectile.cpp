@@ -4,6 +4,7 @@
 #include "Projectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "PhysicsEngine/RadialForceComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -53,8 +54,20 @@ void AProjectile::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImp
 	ImpactBlast->Activate();
 	ExplosionForce->FireImpulse();
 
+	// destroy the projectile itself
 	SetRootComponent(LaunchBlast);
 	CollisionMesh->DestroyComponent();
+
+	// if this method is called before CollisionMesh being destroyed (and the root changed),
+	// then the damage cannot be applied properly, some time it will miss. The reason is unknown
+	UGameplayStatics::ApplyRadialDamage(
+		this,
+		ProjectileDamage,
+		GetActorLocation(),
+		ExplosionForce->Radius,
+		UDamageType::StaticClass(),
+		TArray<AActor*>()
+	);
 
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AProjectile::OnTimerExpire, DestroyDelay);

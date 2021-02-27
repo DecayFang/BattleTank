@@ -16,6 +16,22 @@ void ATank::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	Health = MaxHealth;
+}
+
+float ATank::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	DamageAmount = FMath::Clamp(DamageAmount, 0.f, Health);
+	Health -= DamageAmount;
+	if (FMath::IsNearlyZero(Health)) {
+		OnTankDeathDelegate.Broadcast();
+	}
+	return DamageAmount;
+}
+
+float ATank::GetHealthPercentage() const
+{
+	return Health / MaxHealth;
 }
 
 // Called every frame
