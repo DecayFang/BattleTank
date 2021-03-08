@@ -18,6 +18,13 @@ public:
 	// Sets default values for this actor's properties
 	ASprungWheel();
 
+	// add the force to the wheels, using the direction of the Placeholder (because this component will not rotate)
+	// multiplied by the ForceMagnitude which is between [-1,1] (negative value indicates reverse direction.)
+	void AddDrivingForce(float ForceMagnitude);
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -39,8 +46,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Suspension")
 	USphereComponent* Wheel = nullptr;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+private:	
+	// Snapshot of the Throttle force added to the wheel
+	float CurrentForce = 0.f;
+
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 };

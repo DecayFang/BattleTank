@@ -23,28 +23,18 @@ public:
 
 	UTankTrack();
 
-	virtual void BeginPlay() override;
-
 	// set CurrentThrottle between -1.0 and 1.0
 	UFUNCTION(BlueprintCallable, Category = Input)
 	void SetThrottle(float Throttle);
 	
 	// Maximum force pulling the tank
 	UPROPERTY(EditDefaultsOnly, Category = Movement)
-	float TrackMaxDrivingForce = 60000000.f;	// 40 tonne, 10m/s2 and 100 cm every meter
+	float TrackMaxDrivingForce = 10000000.f;	// 40 tonne, 10m/s2 and 100 cm every meter
 
 private:
-
-	// add a sideway correction force to cancel the tank's slipping issue
-	void AddSidewayForce();
-
-	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-
 	// push (or pull) the tank according to the CurrentThrottle
-	void DriveTank();
+	void DriveTank(float CurrentThrottle);
 
-	// Throttle value of the current frame
-	float CurrentThrottle;
+	TArray<class ASprungWheel*> GetWheels() const;
 
 };

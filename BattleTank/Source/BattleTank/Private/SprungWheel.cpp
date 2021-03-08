@@ -10,6 +10,7 @@
 ASprungWheel::ASprungWheel()
 {
 	PrimaryActorTick.bCanEverTick = true;	// TODO: check if this class need to be ticking
+	PrimaryActorTick.TickGroup = TG_PostPhysics;
 
 	Spring = CreateDefaultSubobject<UPhysicsConstraintComponent>(FName("Spring"));
 	SetRootComponent(Spring);
@@ -24,10 +25,18 @@ ASprungWheel::ASprungWheel()
 	Wheel->SetupAttachment(Placeholder);
 }
 
+void ASprungWheel::AddDrivingForce(float ForceMagnitude)
+{
+	CurrentForce += ForceMagnitude;
+}
+
 // Called when the game starts or when spawned
 void ASprungWheel::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Wheel->SetNotifyRigidBodyCollision(true);
+	Wheel->OnComponentHit.AddDynamic(this, &ASprungWheel::OnHit);
 
 	SetupConstraint();
 }
@@ -48,5 +57,15 @@ void ASprungWheel::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (PrimaryActorTick.TickGroup == TG_PostPhysics) {
+		CurrentForce = 0.f;
+	}
+	else
+		PrimaryActorTick.TickGroup = TG_PostPhysics;
+}
+
+void ASprungWheel::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	Wheel->AddForce(CurrentForce * Placeholder->GetForwardVector());
 }
 

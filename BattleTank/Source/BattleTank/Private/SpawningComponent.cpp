@@ -42,3 +42,8 @@ void USpawningComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	// ...
 }
 
+AActor* USpawningComponent::GetAttachedActor()
+{
+	return AttachedActor;
+}
+
