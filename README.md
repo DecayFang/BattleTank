@@ -9,15 +9,15 @@ Welcome to BattleTank! This is a game project from the famous Udemy course: [Unr
 
 * Tank control and fighting system, including barrel and turret moving, tank track moving, ballistic prediction and particle system for projectile:
 
-![ezgif-3-567b32c1c22f](http://img.davefang.top/ezgif-3-567b32c1c22f.gif)
+![ezgif-3-567b32c1c22f](Examples/Aiming.gif)
 
-![ezgif-3-6689d134de95](http://img.davefang.top/ezgif-3-6689d134de95.gif)
+![ezgif-3-6689d134de95](Examples/Moving.gif)
 
-![ezgif-6-40c6a79b715d](http://img.davefang.top/ezgif-6-40c6a79b715d.gif)
+![ezgif-6-40c6a79b715d](Examples/Shooting.gif)
 
 * Simple UI system (health bar and armo display) and damage system:
 
-![ezgif-6-e4269cf4add7](http://img.davefang.top/ezgif-6-e4269cf4add7.gif)
+![ezgif-6-e4269cf4add7](Examples/UI.gif)
 
 
 
