@@ -9,4 +9,5 @@ Welcome to BattleTank! This is a game project from the famous Udemy course: [Unr
 
 * Tank control and fight system, including barrel and turret moving, tank track moving, ballistic prediction and particle system for projectile:
 
-<a href="https://gyazo.com/d52241906d1fe2902c88b0e3a2a8c157"><img src="https://i.gyazo.com/d52241906d1fe2902c88b0e3a2a8c157.png" alt="Image from Gyazo" width="695" style="zoom:50%;" /></a>
+[![Image from Gyazo](https://i.gyazo.com/c92a62f6c1e49cf7144feca5e7504fe1.gif)](https://gyazo.com/c92a62f6c1e49cf7144feca5e7504fe1)
+
