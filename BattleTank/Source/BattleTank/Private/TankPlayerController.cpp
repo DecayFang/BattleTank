@@ -46,7 +46,7 @@ void ATankPlayerController::AimTowardsCrosshair()
 {
 	// trace a sight ray
 	FVector HitLocation;
-	if (GetSightRayHitLocation(HitLocation)) {
+	if (GetSightRayHitLocation(HitLocation) && TankAimingComponent) {
 		// if the ray hits sth on the landscape, then tell the tank to aim at that thing
 		TankAimingComponent->AimAt(HitLocation);
 	}

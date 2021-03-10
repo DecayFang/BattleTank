@@ -18,7 +18,7 @@ UTankAimingComponent::UTankAimingComponent()
 
 void UTankAimingComponent::AimAt(FVector WorldSpaceAim)
 {
-	if (!ensure(Barrel)) {
+	if (!Barrel) {
 		return;
 	}
 

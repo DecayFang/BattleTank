@@ -29,7 +29,7 @@ public:
 	
 	// Maximum force pulling the tank
 	UPROPERTY(EditDefaultsOnly, Category = Movement)
-	float TrackMaxDrivingForce = 10000000.f;	// 40 tonne, 10m/s2 and 100 cm every meter
+	float TrackMaxDrivingForce = 60000000.f;	// 40 tonne, 10m/s2 and 100 cm every meter
 
 private:
 	// push (or pull) the tank according to the CurrentThrottle
